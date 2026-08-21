@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+ENV/
+
+# Database / Cache
+*.db
+*.sqlite
+*.sqlite3
+recoveryos.db
+
+# Environment variables
+.env
+.env.local
+
+# ML Models
+ml/models/*.pkl
+ml/models/*.joblib
+!ml/models/champion_model.pkl
+
+# Node / Frontend
+node_modules/
+dist-frontend/
+dist/
+.eslintcache
+.vite/
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
