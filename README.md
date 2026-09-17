@@ -75,13 +75,11 @@ We evaluated four recovery strategies on a held-out test set of **2,216 failed t
 
 ### Installation
 1. Clone this repository and open the workspace.
-2. Create your `.env` configuration file in the root directory:
-   ```env
-   GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-   DATABASE_URL=sqlite:///./recoveryos.db
-   ENV=development
-   PORT=8000
+2. Create your local configuration from the safe template:
+   ```powershell
+   Copy-Item .env.example .env
    ```
+   Set `GEMINI_API_KEY` only when you want live Gemini-backed reasoning. The deterministic demo and test suite run without it.
 3. Initialize the Python virtual environment and dependencies:
    ```powershell
    uv venv --python 3.11

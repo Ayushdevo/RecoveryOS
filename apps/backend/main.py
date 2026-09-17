@@ -25,10 +25,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
+cors_origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()]
+
 # Enable CORS for frontend dashboard development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins for local buildathon demo ease
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,6 +47,11 @@ def read_root():
         "service": "RecoveryOS API",
         "documentation": "/docs"
     }
+
+@app.get("/health")
+def health_check():
+    """Minimal liveness endpoint for containers and deployment checks."""
+    return {"status": "healthy"}
 
 if __name__ == "__main__":
     uvicorn.run("apps.backend.main:app", host="0.0.0.0", port=settings.PORT, reload=True)

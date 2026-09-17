@@ -155,3 +155,52 @@ def test_low_probability_rejection(test_db: Session, policy_engine: PolicyEngine
     
     assert status == "rejected"
     assert "below the minimum threshold" in reason
+
+
+@pytest.mark.parametrize("probability", [float("nan"), -0.1, 1.1])
+def test_invalid_probability_is_rejected(test_db: Session, policy_engine: PolicyEngine, probability: float):
+    cust = test_db.query(Customer).first()
+    tx = Transaction(
+        id=f"pay_invalid_prob_{probability}",
+        customer_id=cust.id,
+        amount=1000.0,
+        status="failed",
+    )
+    test_db.add(tx)
+    test_db.commit()
+
+    status, reason = policy_engine.evaluate_intervention(test_db, tx, cust, "retry", probability, 500.0)
+
+    assert status == "rejected"
+    assert "finite value between 0 and 1" in reason
+
+
+def test_failed_retries_count_toward_the_retry_limit(test_db: Session, policy_engine: PolicyEngine):
+    cust = test_db.query(Customer).first()
+    tx = Transaction(
+        id="pay_failed_retry_history",
+        customer_id=cust.id,
+        amount=1000.0,
+        status="failed",
+        retry_count=0,
+    )
+    test_db.add(tx)
+    test_db.add_all(
+        [
+            RecoveryAction(
+                id=f"act_failed_retry_{attempt}",
+                transaction_id=tx.id,
+                action_type="retry",
+                status="failed",
+                idempotency_key=f"recovery:{tx.id}:retry:{attempt}",
+                attempt_number=attempt,
+            )
+            for attempt in (1, 2)
+        ]
+    )
+    test_db.commit()
+
+    status, reason = policy_engine.evaluate_intervention(test_db, tx, cust, "retry", 0.8, 500.0)
+
+    assert status == "escalated"
+    assert "Maximum automatic retry limit" in reason
