@@ -155,3 +155,21 @@ def test_low_probability_rejection(test_db: Session, policy_engine: PolicyEngine
     
     assert status == "rejected"
     assert "below the minimum threshold" in reason
+
+
+@pytest.mark.parametrize("probability", [float("nan"), -0.1, 1.1])
+def test_invalid_probability_is_rejected(test_db: Session, policy_engine: PolicyEngine, probability: float):
+    cust = test_db.query(Customer).first()
+    tx = Transaction(
+        id=f"pay_invalid_prob_{probability}",
+        customer_id=cust.id,
+        amount=1000.0,
+        status="failed",
+    )
+    test_db.add(tx)
+    test_db.commit()
+
+    status, reason = policy_engine.evaluate_intervention(test_db, tx, cust, "retry", probability, 500.0)
+
+    assert status == "rejected"
+    assert "finite value between 0 and 1" in reason
