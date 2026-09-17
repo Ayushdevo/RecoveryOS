@@ -48,5 +48,10 @@ def read_root():
         "documentation": "/docs"
     }
 
+@app.get("/health")
+def health_check():
+    """Minimal liveness endpoint for containers and deployment checks."""
+    return {"status": "healthy"}
+
 if __name__ == "__main__":
     uvicorn.run("apps.backend.main:app", host="0.0.0.0", port=settings.PORT, reload=True)
