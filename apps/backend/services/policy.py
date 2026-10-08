@@ -43,6 +43,9 @@ class PolicyEngine:
         if not math.isfinite(transaction.amount) or transaction.amount <= 0:
             return "rejected", "Policy: Transaction amount must be finite and positive."
 
+        if not math.isfinite(probability) or not 0 <= probability <= 1:
+            return "rejected", "Policy: Recovery probability must be finite and between zero and one."
+
         # Policy 1: High Transaction Value Guardrail -> Escalate to human
         if transaction.amount > self.high_amount_threshold:
             return "escalated", f"Policy: Transaction amount (INR {transaction.amount:,.2f}) exceeds automatic recovery threshold (INR {self.high_amount_threshold:,.2f}). Human review required."
