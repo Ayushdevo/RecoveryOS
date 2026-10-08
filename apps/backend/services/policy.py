@@ -5,6 +5,8 @@ from apps.backend.models import Transaction, Customer, RecoveryAction
 
 class PolicyEngine:
     def __init__(self, max_retries: int = 2, high_amount_threshold: float = 50000.0, min_probability: float = 0.30):
+        if isinstance(max_retries, bool) or not isinstance(max_retries, int) or max_retries < 0:
+            raise ValueError("max_retries must be a nonnegative integer")
         self.max_retries = max_retries
         self.high_amount_threshold = high_amount_threshold
         self.min_probability = min_probability
@@ -74,3 +76,4 @@ class PolicyEngine:
         return "approved", "Policy: Approved for autonomous execution."
 
 policy_engine = PolicyEngine()
+

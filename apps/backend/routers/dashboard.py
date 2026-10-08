@@ -1,6 +1,6 @@
 import datetime
 import json
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_, desc
@@ -420,7 +420,7 @@ class TransactionUpdate(BaseModel):
     status: str
 
 class PolicyConfigUpdate(BaseModel):
-    max_retries: int
+    max_retries: int = Field(ge=0, strict=True)
     high_amount_threshold: float
     min_probability: float
 
@@ -465,3 +465,4 @@ async def update_transaction(transaction_id: str, payload: TransactionUpdate, db
         await recovery_service.process_failed_payment(db, transaction_id)
         
     return {"message": "Transaction updated and re-evaluated successfully."}
+
