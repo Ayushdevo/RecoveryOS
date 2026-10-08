@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class PaymentCreate(BaseModel):
-    amount: float
+    amount: float = Field(gt=0, allow_inf_nan=False)
     payment_method: str
     merchant_category: str
     customer_id: str
@@ -35,3 +35,4 @@ class InterventionResponse(BaseModel):
     status: str
     amount: float
     failure_reason: Optional[str] = None
+
