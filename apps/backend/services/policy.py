@@ -1,4 +1,5 @@
 import datetime
+import math
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from apps.backend.models import Transaction, Customer, RecoveryAction
@@ -8,6 +9,8 @@ class PolicyEngine:
         if isinstance(max_retries, bool) or not isinstance(max_retries, int) or max_retries < 0:
             raise ValueError("max_retries must be a nonnegative integer")
         self.max_retries = max_retries
+        if not math.isfinite(high_amount_threshold) or high_amount_threshold <= 0:
+            raise ValueError("high_amount_threshold must be finite and positive")
         self.high_amount_threshold = high_amount_threshold
         self.min_probability = min_probability
         
