@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 
 class PaymentCreate(BaseModel):
     amount: float = Field(gt=0, allow_inf_nan=False)
@@ -25,9 +25,9 @@ class PaymentResponse(BaseModel):
         from_attributes = True
 
 class InterventionRequest(BaseModel):
-    action_type: str
-    attempt: int
-    idempotency_key: str
+    action_type: Literal["retry", "reminder", "link"]
+    attempt: int = Field(ge=1, strict=True)
+    idempotency_key: str = Field(min_length=1, max_length=256, pattern=r"^\S+$")
 
 class InterventionResponse(BaseModel):
     transaction_id: str
