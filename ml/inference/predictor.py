@@ -1,4 +1,5 @@
 import os
+import math
 import pickle
 import pandas as pd
 import numpy as np
@@ -84,6 +85,8 @@ class RecoveryPredictor:
         Returns: { action: (expected_value, success_probability) }
         Formula: E[V] = P(success) * amount - cost - (1 - P(success)) * annoyance_cost
         """
+        if not math.isfinite(amount) or amount <= 0:
+            raise ValueError("amount must be finite and positive")
         expected_values = {}
         for action, prob in probs.items():
             cost = INTERVENTION_COSTS.get(action, 0.0)
