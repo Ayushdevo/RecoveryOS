@@ -43,7 +43,10 @@ class RecoveryPredictor:
     def predict_probs(self, X: pd.DataFrame) -> np.ndarray:
         if self.pipeline is None:
             raise ValueError("Model pipeline is not loaded.")
-        return self.pipeline.predict_proba(X)[:, 1]
+        classes = list(self.pipeline.classes_)
+        if 1 not in classes:
+            raise ValueError("Model must include the recovered class label 1.")
+        return self.pipeline.predict_proba(X)[:, classes.index(1)]
 
     def predict_action_probabilities(self, customer_data: Dict[str, Any], transaction_data: Dict[str, Any]) -> Dict[str, float]:
         """
@@ -113,3 +116,4 @@ class RecoveryPredictor:
                 for action, (ev, prob) in ev_map.items()
             }
         }
+
