@@ -40,6 +40,9 @@ class PolicyEngine:
         if transaction.customer_id != customer.id:
             return "rejected", "Policy: Customer does not own this transaction."
 
+        if not math.isfinite(transaction.amount) or transaction.amount <= 0:
+            return "rejected", "Policy: Transaction amount must be finite and positive."
+
         # Policy 1: High Transaction Value Guardrail -> Escalate to human
         if transaction.amount > self.high_amount_threshold:
             return "escalated", f"Policy: Transaction amount (INR {transaction.amount:,.2f}) exceeds automatic recovery threshold (INR {self.high_amount_threshold:,.2f}). Human review required."
