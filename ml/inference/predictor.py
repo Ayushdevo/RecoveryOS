@@ -89,6 +89,8 @@ class RecoveryPredictor:
             raise ValueError("amount must be finite and positive")
         expected_values = {}
         for action, prob in probs.items():
+            if action not in INTERVENTION_COSTS:
+                raise ValueError(f"Unknown intervention: {action}")
             cost = INTERVENTION_COSTS.get(action, 0.0)
             annoyance = INTERVENTION_ANNOYANCE_COSTS.get(action, 0.0)
             
