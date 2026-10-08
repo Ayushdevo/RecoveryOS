@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Literal
 from apps.backend.agents.base import generate_structured_output
 
 class PlannerResult(BaseModel):
-    decision: str = Field(description="One of: 'retry', 'reminder', 'link', 'none', 'escalate'")
-    confidence: float = Field(description="Confidence score between 0.0 and 1.0.")
+    decision: Literal["retry", "reminder", "link", "none", "escalate"] = Field(description="One of: 'retry', 'reminder', 'link', 'none', 'escalate'")
+    confidence: float = Field(ge=0, le=1, allow_inf_nan=False, description="Confidence score between 0.0 and 1.0.")
     reason_codes: List[str] = Field(description="Array of reason codes explaining the decision (e.g., ['historical_success', 'transient_failure']).")
-    expected_recovery_value: float = Field(description="Estimated expected recovery value in INR.")
+    expected_recovery_value: float = Field(allow_inf_nan=False, description="Estimated expected recovery value in INR.")
     requires_human: bool = Field(description="True if this transaction warrants manual approval (e.g., high amount).")
     justification: str = Field(description="A clean, readable, professional justification of why this action was chosen.")
 
@@ -92,3 +92,4 @@ Return your response strictly in JSON format matching the schema.
     except Exception as e:
         print(f"RecoveryPlanner calling Gemini failed: {e}. Executing fallback.")
         return fallback_plan(ml_rankings, amount)
+
