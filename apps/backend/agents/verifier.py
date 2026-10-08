@@ -1,3 +1,4 @@
+import math
 from pydantic import BaseModel, Field
 from typing import Dict, Any
 from apps.backend.agents.base import generate_structured_output
@@ -12,7 +13,15 @@ def fallback_verify(api_response: Dict[str, Any]) -> VerificationResult:
     Deterministic fallback verifier.
     """
     status = api_response.get("status")
-    amount = api_response.get("amount", 0.0)
+    try:
+        amount = float(api_response.get("amount", 0.0))
+    except (TypeError, ValueError):
+        amount = 0.0
+    if not math.isfinite(amount) or amount <= 0:
+        return VerificationResult(
+            is_settled=False, recovered_amount=0.0,
+            explanation="Deterministic rule: No finite positive settled amount was supplied."
+        )
     
     if status == "captured":
         return VerificationResult(
@@ -55,3 +64,4 @@ Return your response strictly in JSON format matching the schema.
     except Exception as e:
         print(f"VerificationAgent calling Gemini failed: {e}. Executing fallback.")
         return fallback_verify(api_response)
+
