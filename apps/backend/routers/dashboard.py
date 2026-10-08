@@ -422,7 +422,7 @@ class TransactionUpdate(BaseModel):
 class PolicyConfigUpdate(BaseModel):
     max_retries: int = Field(ge=0, strict=True)
     high_amount_threshold: float = Field(gt=0, allow_inf_nan=False)
-    min_probability: float
+    min_probability: float = Field(ge=0, le=1, allow_inf_nan=False)
 
 @router.get("/policy-config")
 def get_policy_config():

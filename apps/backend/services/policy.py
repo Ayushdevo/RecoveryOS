@@ -12,6 +12,8 @@ class PolicyEngine:
         if not math.isfinite(high_amount_threshold) or high_amount_threshold <= 0:
             raise ValueError("high_amount_threshold must be finite and positive")
         self.high_amount_threshold = high_amount_threshold
+        if not math.isfinite(min_probability) or not 0 <= min_probability <= 1:
+            raise ValueError("min_probability must be finite and between zero and one")
         self.min_probability = min_probability
         
     def evaluate_intervention(
