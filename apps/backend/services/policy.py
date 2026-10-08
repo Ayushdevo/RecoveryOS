@@ -34,6 +34,9 @@ class PolicyEngine:
         if action_type == "none":
             return "rejected", "Policy: Action 'none' requires no execution."
             
+        if action_type not in {"retry", "reminder", "link"}:
+            return "rejected", "Policy: Unsupported autonomous action."
+
         # Policy 1: High Transaction Value Guardrail -> Escalate to human
         if transaction.amount > self.high_amount_threshold:
             return "escalated", f"Policy: Transaction amount (INR {transaction.amount:,.2f}) exceeds automatic recovery threshold (INR {self.high_amount_threshold:,.2f}). Human review required."
